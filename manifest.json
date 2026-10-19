@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Galactic Tab",
-  "version": "1.5.0",
-  "description": "A detailed rotating galaxy, gentle star flight, Firefox shortcuts and default search.",
+  "version": "1.6.0",
+  "description": "A rotating galaxy, nebula, black hole or ringed planet over gentle star flight, with themes, shortcuts, to-dos and search.",
   "permissions": [
     "search",
     "topSites",
