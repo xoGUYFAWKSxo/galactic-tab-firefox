@@ -14,6 +14,18 @@ function normalizeSettings(raw) {
   if (typeof raw.notes === 'string') clean.notes = raw.notes.slice(0,20000);
   return clean;
 }
-let galacticSettings;
-try { galacticSettings = normalizeSettings(JSON.parse(localStorage.getItem(SETTINGS_KEY))); }
-catch { galacticSettings = structuredClone(defaultSettings); }
+// Each page tags its writes so storage.onChanged can skip its own echoes.
+const settingsWriter = crypto.randomUUID();
+let galacticSettings = structuredClone(defaultSettings);
+// browser.storage.local survives history and site-data clearing; localStorage does not.
+const settingsLoaded = (async () => {
+  try {
+    const stored = (await browser.storage.local.get(SETTINGS_KEY))[SETTINGS_KEY];
+    if (stored !== undefined) { galacticSettings = normalizeSettings(stored); return; }
+    const legacy = localStorage.getItem(SETTINGS_KEY);
+    if (legacy === null) return;
+    galacticSettings = normalizeSettings(JSON.parse(legacy));
+    await browser.storage.local.set({[SETTINGS_KEY]: galacticSettings});
+    localStorage.removeItem(SETTINGS_KEY);
+  } catch { /* Defaults remain in place. */ }
+})();

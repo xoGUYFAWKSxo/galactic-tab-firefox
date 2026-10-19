@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Galactic Tab",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "description": "A detailed rotating galaxy, gentle star flight, Firefox shortcuts and default search.",
   "permissions": [
     "search",
@@ -10,13 +10,17 @@
     "storage"
   ],
   "icons": {
-    "48": "assets/icon.png",
-    "96": "assets/icon.png"
+    "128": "assets/icon.png"
   },
   "browser_specific_settings": {
     "gecko": {
       "id": "spiral-galaxy-new-tab@galactic-studio.local",
-      "strict_min_version": "115.0"
+      "strict_min_version": "115.0",
+      "data_collection_permissions": {
+        "required": [
+          "none"
+        ]
+      }
     }
   },
   "chrome_url_overrides": {

@@ -26,7 +26,6 @@ body {
 
 .universe,
 .nebula,
-.stars,
 .vignette {
   position: fixed;
   inset: 0;
@@ -45,28 +44,6 @@ body {
     radial-gradient(ellipse at 66% 51%, rgba(105, 62, 150, 0.1), transparent 31%),
     radial-gradient(ellipse at 32% 57%, rgba(48, 69, 149, 0.1), transparent 28%);
   filter: blur(26px);
-}
-
-.stars {
-  z-index: -1;
-  inset: -100%;
-  background-repeat: repeat;
-  pointer-events: none;
-  will-change: background-position;
-}
-
-.stars-far {
-  opacity: 0.48;
-  background-image: url("assets/stars-far.svg");
-  background-size: 960px 960px;
-  animation: drift-far 210s linear infinite;
-}
-
-.stars-near {
-  opacity: 0.72;
-  background-image: url("assets/stars-near.svg");
-  background-size: 640px 640px;
-  animation: drift-near 150s linear infinite;
 }
 
 .galaxy {
@@ -207,18 +184,8 @@ body {
   to { transform: rotate(360deg); }
 }
 
-@keyframes drift-far {
-  to { background-position: 960px 960px; }
-}
-
-@keyframes drift-near {
-  to { background-position: 640px 640px; }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .galaxy,
-  .stars-far,
-  .stars-near {
+  .galaxy {
     animation: none;
     will-change: auto;
   }
@@ -245,6 +212,8 @@ body {
 
 /* Personalization panel and reorderable home widgets. */
 [hidden] { display: none !important; }
+/* Hold saved layout until storage has loaded, so defaults never flash. */
+.loading .home-content, .loading .galaxy { visibility: hidden; }
 .home-content { display: flex; flex-direction: column; align-items: center; gap: 30px; padding-bottom: 100px; }
 .home-content > [data-widget] { flex-shrink: 0; }
 .home-content .home-heading, .home-content .shortcuts { margin: 0; }

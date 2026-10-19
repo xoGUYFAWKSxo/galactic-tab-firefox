@@ -3,8 +3,9 @@ const settingsStatus = document.querySelector('#settings-status');
 const launcher = document.querySelector('#open-customize');
 const notes = document.querySelector('#personal-notes');
 function saveSettings() {
-  try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(galacticSettings)); settingsStatus.textContent = 'Saved on this device.'; }
-  catch { settingsStatus.textContent = 'Settings could not be saved. Export a backup to keep your changes.'; }
+  browser.storage.local.set({[SETTINGS_KEY]: {...galacticSettings, writer: settingsWriter}}).then(
+    () => { settingsStatus.textContent = 'Saved on this device.'; },
+    () => { settingsStatus.textContent = 'Settings could not be saved. Export a backup to keep your changes.'; });
 }
 function updateClock() {
   const date = new Date();
@@ -97,9 +98,12 @@ fileInput.addEventListener('change',async () => {
   } catch (error) { settingsStatus.textContent=`Import failed: ${error.message}`; }
   fileInput.value='';
 });
-addEventListener('storage', event => {
-  if (event.key !== SETTINGS_KEY) return;
-  try { galacticSettings=normalizeSettings(JSON.parse(event.newValue)); applySettings(); renderWidgetControls(); resizeSpace(); }
-  catch { settingsStatus.textContent='Could not read changes from another tab.'; }
+browser.storage.onChanged.addListener((changes, area) => {
+  const change = changes[SETTINGS_KEY];
+  if (area !== 'local' || !change || change.newValue?.writer === settingsWriter) return;
+  galacticSettings = normalizeSettings(change.newValue); applySettings(); renderWidgetControls(); resizeSpace();
 });
-applySettings(); renderWidgetControls(); setInterval(updateClock,1000);
+settingsLoaded.then(() => {
+  applySettings(); renderWidgetControls(); resizeSpace(); setInterval(updateClock,1000);
+  document.documentElement.classList.remove('loading');
+});
