@@ -22,9 +22,9 @@ Temporary add-ons disappear on restart. Persistent installation requires Mozilla
 - `search`: uses your default search engine.
 - `topSites`: displays Firefox shortcuts.
 - `theme`: applies optional browser-strip visuals.
-- `storage`: saves browser-strip preferences and restores them on startup.
+- `storage`: saves page settings, notes and browser-strip preferences, and restores the strip on startup.
 
-Page preferences and notes use extension local storage; browser-strip settings use `browser.storage.local`. The extension does not send these to a server. Searches and opened shortcuts go to their normal destinations. Export backups before uninstalling; backups can contain notes. Page backups and Browser Strip backups are separate.
+Page settings, notes and browser-strip settings are kept in `browser.storage.local`, which survives clearing history and site data. Settings saved by versions before 1.5.0 in page `localStorage` are moved over automatically the first time a new tab opens. The extension does not send any of this to a server. Searches and opened shortcuts go to their normal destinations. Export backups before uninstalling; backups can contain notes. Page backups and Browser Strip backups are separate.
 
 ## Build
 Python 3.10+ is required for the build scripts.
@@ -35,7 +35,7 @@ python tools/build_strip_presets.py
 python tools/package.py
 ```
 
-Prepared animation images are included. Rebuilding them is optional and can take a few minutes. The output `galactic-tab.xpi` is unsigned. Browser-strip presets add substantially to package size.
+Prepared animation images are included. Rebuilding them is optional and takes a minute or two. The output `galactic-tab.xpi` is unsigned. Browser-strip presets are palette APNGs, about 55 MB in total. Each slow preset is a copy of the normal one with doubled frame delays; Firefox ignores multi-megabyte `data:` theme images, so the copies cannot be generated at runtime.
 
 ## Design limitations
 The custom page replaces Firefox Home. Native weather and news cards are not embedded. Widgets reorder in a responsive vertical stack. Browser-strip animation presets approximate new-tab slider values; colors apply live. The page honors system reduced-motion preferences; choose Still for each browser-strip layer to disable its animation.
