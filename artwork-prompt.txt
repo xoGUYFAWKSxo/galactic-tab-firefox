@@ -1,0 +1,3 @@
+Upgrade this exact blue lavender barred spiral galaxy into an exquisitely detailed 8K-looking astronomical illustration for a large Firefox new-tab background. Preserve its spiral silhouette, orientation, cool blue lavender arms, small pink star-forming clusters and warm ivory gold elongated core. Sharpen intricate dust lanes and resolve fine luminous stars, avoid a blown-out center. Face-on centered square composition, entire spiral visible. Isolate galaxy on true transparent background with soft transparent outer edges, no rectangular backdrop, no unrelated field stars, text or frame. Highest supported resolution and detail. This will slowly rotate over a separate animated starfield.
+
+Tool: built-in imagegen; transparent_background=true.

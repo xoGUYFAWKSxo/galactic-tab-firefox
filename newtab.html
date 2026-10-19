@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="dark">
+    <title>Galactic Tab</title>
+    <link rel="stylesheet" href="newtab.css">
+    <script src="settings.js" defer></script>
+    <script src="newtab.js" defer></script>
+    <script src="customize.js" defer></script>
+<script src="strip-shared.js" defer></script>
+<script src="strip-panel.js" defer></script>
+  </head>
+  <body>
+    <main class="universe" aria-label="Spiral galaxy and stars">
+      <div class="nebula" aria-hidden="true"></div>
+      <canvas id="star-flight" aria-hidden="true"></canvas>
+      <img class="galaxy" src="assets/galaxy.png" alt="" draggable="false">
+      <div class="vignette" aria-hidden="true"></div>
+
+      <section class="home-content" aria-label="Galactic Tab home">
+      <header class="home-heading" data-widget="heading"><img src="assets/icon.png" alt="" width="48" height="48"><h1>Galactic Tab</h1></header>
+      <div class="search-widget" data-widget="search"><form class="search" role="search">
+        <label class="visually-hidden" for="search-query">Search the web</label>
+        <input id="search-query" name="q" type="search" placeholder="Search the web" autocomplete="off" spellcheck="false">
+        <button type="submit" aria-label="Search">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.3"></circle><path d="m15.5 15.5 4.1 4.1"></path></svg>
+        </button>
+      </form></div>
+      <p class="message" aria-live="polite"></p>
+      <section data-widget="shortcuts" class="shortcuts" aria-labelledby="shortcut-title"><h2 id="shortcut-title">Shortcuts</h2><div id="top-sites" class="site-grid"></div><p id="sites-message" role="status"></p></section>
+      <section class="clock-widget card" data-widget="clock"><time id="clock-time"></time><p id="clock-date"></p></section>
+      <section class="notes-widget card" data-widget="notes"><h2>Notes</h2><textarea id="personal-notes" aria-label="Personal notes" placeholder="A thought to come back to…" maxlength="20000"></textarea></section>
+      </section>
+    </main>
+    <button id="open-customize" class="customize-launcher" type="button">⚙ Customize</button>
+    <dialog id="customize-panel" aria-labelledby="customize-title">
+      <header class="panel-heading"><div><h2 id="customize-title">Make space yours</h2><p>Personalize Galactic Tab</p></div><button id="close-customize" aria-label="Close Customize">✕</button></header>
+      <section><h3>Space scene</h3>
+        <label>Galaxy position<select data-setting="corner"><option value="top-right">Upper right</option><option value="top-left">Upper left</option><option value="bottom-right">Lower right</option><option value="bottom-left">Lower left</option></select></label>
+        <label>Galaxy size <output data-value="size"></output><input data-setting="size" type="range" min="100" max="500" step="10"></label>
+        <label>Galaxy rotation <output data-value="spin"></output><input data-setting="spin" type="range" min="0" max="2" step="0.1"></label>
+        <label>Star speed <output data-value="speed"></output><input data-setting="speed" type="range" min="0" max="3" step="0.1"></label>
+        <label>Star density <output data-value="density"></output><input data-setting="density" type="range" min="0.25" max="2" step="0.25"></label>
+        <label class="toggle">Twinkling stars<input data-setting="twinkle" type="checkbox"></label>
+        <label class="toggle">Show galaxy<input data-setting="galaxy" type="checkbox"></label>
+        <label>Card opacity <output data-value="opacity"></output><input data-setting="opacity" type="range" min="0.2" max="1" step="0.05"></label>
+      </section>
+      <section><h3>Widgets &amp; order</h3><p>Drag rows to reorder, or use their arrow buttons.</p><div id="widget-settings"></div><label class="toggle">24-hour clock<input data-setting="clock24" type="checkbox"></label></section>
+      <section><h3>Presets</h3><div class="button-row"><button data-preset="minimal">Minimal</button><button data-preset="productive">Productivity</button><button data-preset="space">Deep Space</button></div></section>
+      <section id="strip-controls"><h3>Browser Strip</h3>
+<p>Colors update live when enabled. Choose the animation, then Apply. These settings are separate from the new-tab scene.</p>
+<label class="toggle">Customize browser strip<input id="strip-enabled" type="checkbox"></label>
+<label>Star appearance<select id="strip-preset"><option value="gentle">Gentle · twinkling</option><option value="rich">Dense · twinkling</option><option value="steady">Gentle · no twinkle</option></select></label>
+<label>Star motion<select id="strip-speed"><option value="slow">Slow cruise (90 seconds)</option><option value="normal">Cruise (45 seconds)</option><option value="still">Still</option></select></label>
+<label class="toggle">Show galaxy<input id="strip-galaxy" type="checkbox"></label>
+<label>Galaxy size<select id="strip-size"><option value="48">Small</option><option value="72">Medium</option><option value="96">Large</option></select></label>
+<label>Galaxy position<select id="strip-position"><option value="right top">Right · near window controls</option><option value="center top">Center</option><option value="left top">Left</option></select></label>
+<label>Galaxy spin<select id="strip-spin"><option value="normal">Normal (45 seconds)</option><option value="slow">Slow (90 seconds)</option><option value="still">Still</option></select></label>
+<label class="toggle">Strip background<input id="strip-frame" type="color"></label>
+<label class="toggle">Toolbar &amp; selected tab<input id="strip-toolbar" type="color"></label>
+<label class="toggle">Text<input id="strip-text" type="color"></label>
+<label class="toggle">Accent<input id="strip-accent" type="color"></label>
+<div class="button-row"><button id="strip-match">Match new tab</button><button id="strip-apply">Apply visuals</button><button id="strip-export">Export strip</button><button id="strip-import">Import strip</button></div>
+<input id="strip-file" type="file" accept=".json,application/json" hidden>
+<p id="strip-status" role="status">Loading browser settings…</p></section>
+<section><h3>Your settings</h3><p>Saved on this device automatically. Backup files include your notes.</p><div class="button-row"><button id="export-settings">Export backup</button><button id="import-settings">Import backup</button><button id="reset-settings">Reset layout</button></div><input id="import-file" type="file" accept="application/json,.json" hidden></section>
+      <p id="settings-status" role="status" aria-live="polite"></p>
+    </dialog>
+  </body>
+</html>
