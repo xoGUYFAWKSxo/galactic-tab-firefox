@@ -3,6 +3,13 @@
   font-family: Inter, "Segoe UI", sans-serif;
   background: #050713;
   color: #edf0ff;
+  --accent: #7883df;
+  --accent-light: color-mix(in srgb, var(--accent), white 35%);
+  --nebula-1: 122, 130, 221;
+  --nebula-2: 105, 62, 150;
+  --nebula-3: 48, 69, 149;
+  --art-hue: 0deg;
+  --bg-dim: .35;
 }
 
 * {
@@ -40,9 +47,9 @@ body {
   z-index: -1;
   inset: -24%;
   background:
-    radial-gradient(ellipse at 47% 44%, rgba(122, 130, 221, 0.13), transparent 21%),
-    radial-gradient(ellipse at 66% 51%, rgba(105, 62, 150, 0.1), transparent 31%),
-    radial-gradient(ellipse at 32% 57%, rgba(48, 69, 149, 0.1), transparent 28%);
+    radial-gradient(ellipse at 47% 44%, rgba(var(--nebula-1), 0.13), transparent 21%),
+    radial-gradient(ellipse at 66% 51%, rgba(var(--nebula-2), 0.1), transparent 31%),
+    radial-gradient(ellipse at 32% 57%, rgba(var(--nebula-3), 0.1), transparent 28%);
   filter: blur(26px);
 }
 
@@ -60,7 +67,7 @@ body {
   object-fit: contain;
   transform: rotate(0deg);
   animation: galaxy-turn 45s linear infinite;
-  filter: drop-shadow(0 0 26px rgba(117, 132, 255, 0.17));
+  filter: hue-rotate(var(--art-hue)) drop-shadow(0 0 26px color-mix(in srgb, var(--accent) 20%, transparent));
   user-select: none;
   pointer-events: none;
   will-change: transform;
@@ -100,8 +107,8 @@ body {
 }
 
 .search:focus-within {
-  border-color: rgba(169, 182, 255, 0.66);
-  box-shadow: 0 0 0 3px rgba(112, 130, 239, 0.14), 0 12px 44px rgba(0, 0, 0, 0.3);
+  border-color: color-mix(in srgb, var(--accent-light) 66%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 14%, transparent), 0 12px 44px rgba(0, 0, 0, 0.3);
 }
 
 .search input {
@@ -131,13 +138,13 @@ body {
   place-items: center;
   border: 0;
   border-radius: 50%;
-  background: #7883df;
+  background: var(--accent);
   color: #fff;
   cursor: pointer;
 }
 
 .search button:hover {
-  background: #909af0;
+  background: color-mix(in srgb, var(--accent), white 15%);
 }
 
 .search button:focus-visible {
@@ -184,11 +191,10 @@ body {
   to { transform: rotate(360deg); }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .galaxy {
-    animation: none;
-    will-change: auto;
-  }
+/* newtab.js sets motion-off from the Animation setting, which follows reduce-motion by default. */
+.motion-off .galaxy {
+  animation-play-state: paused !important;
+  will-change: auto;
 }
 
 /* Familiar home layout floats above the animated scene. */
@@ -200,14 +206,14 @@ body {
 .home-content .message { position: static; text-align: center; margin-top: 12px; }
 .shortcuts { width: min(920px, 100%); margin: 48px auto 0; }
 .shortcuts h2 { font-size: 14px; font-weight: 500; margin: 0 0 20px; text-shadow: 0 2px 8px #000; }
-.site-grid { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 14px; }
+.site-grid { display: grid; grid-template-columns: repeat(var(--site-columns, 8), minmax(0, 104px)); justify-content: center; gap: 14px; }
 .site { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 12px 6px; border-radius: 12px; color: #f1f3ff; text-decoration: none; min-width: 0; }
-.site:hover, .site:focus-visible { background: #141b38b8; outline: 2px solid #a0aaf9; outline-offset: 2px; }
+.site:hover, .site:focus-visible { background: #141b38b8; outline: 2px solid var(--accent-light); outline-offset: 2px; }
 .site-icon { position: relative; display: grid; place-items: center; width: 64px; height: 64px; border-radius: 14px; background: #11172ee6; border: 1px solid #c5cfff35; box-shadow: 0 5px 22px #0005; font-size: 26px; }
 .site-icon img { position: absolute; width: 32px; height: 32px; object-fit: contain; background: #11172e; }
 .site-label { width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center; font-size: 12px; text-shadow: 0 2px 6px #000; }
 #sites-message { font-size: 13px; text-align: center; }
-@media (max-width: 760px) { .site-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (max-width: 760px) { .site-grid { grid-template-columns: repeat(min(4, var(--site-columns, 8)), minmax(0, 1fr)); } }
 @media (max-width: 380px) { .site-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 
 /* Personalization panel and reorderable home widgets. */
@@ -232,19 +238,64 @@ body {
 .panel-heading { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
 .panel-heading h2 { font-size: 23px; margin: 0 0 6px; }
 #customize-panel p { color: #b9c5e4; font-size: 13px; line-height: 1.5; margin: 6px 0 16px; }
-#customize-panel section { border-top: 1px solid #ffffff16; padding-top: 16px; margin-top: 22px; }
-#customize-panel h3 { font-size: 15px; margin: 0 0 16px; }
+#customize-panel details { border-top: 1px solid #ffffff16; padding: 14px 0 4px; margin-top: 14px; }
+#customize-panel summary { font-size: 15px; font-weight: 600; cursor: pointer; padding: 4px 0; }
+#customize-panel summary:hover { color: var(--accent-light); }
+#customize-panel details[open] summary { margin-bottom: 6px; }
 #customize-panel label { display: block; font-size: 14px; margin: 14px 0; }
 #customize-panel output { float: right; color: #aebeff; font-variant-numeric: tabular-nums; }
-#customize-panel input[type=range] { display: block; width: 100%; margin: 12px 0 0; accent-color: #aab7ff; }
-#customize-panel select { display:block; width:100%; margin-top:8px; padding:10px; border:1px solid #a6b5ed44; border-radius:8px; background:#202b48; color:inherit; font:inherit; }
+#customize-panel input[type=range] { display: block; width: 100%; margin: 12px 0 0; accent-color: var(--accent-light); }
+#customize-panel select, #customize-panel input[type=text] { display:block; width:100%; margin-top:8px; padding:10px; border:1px solid #a6b5ed44; border-radius:8px; background:#202b48; color:inherit; font:inherit; }
 #customize-panel .toggle { display:flex; align-items:center; justify-content:space-between; gap:12px; }
-#customize-panel input[type=checkbox] { accent-color:#aab7ff; width:18px; height:18px; }
+#customize-panel input[type=checkbox] { accent-color:var(--accent-light); width:18px; height:18px; }
 #customize-panel button { padding:9px 12px; border:1px solid #a6b5ed44; border-radius:8px; color:inherit; background:#263251; font:inherit; font-size:13px; cursor:pointer; }
 #customize-panel button:hover { background:#35466e; }
 #customize-panel button:disabled { opacity:.35; cursor:default; }
-#customize-panel :focus-visible, .customize-launcher:focus-visible, #personal-notes:focus-visible { outline:2px solid #b9c6ff; outline-offset:3px; }
+#customize-panel :focus-visible, .customize-launcher:focus-visible, #personal-notes:focus-visible, .todo-widget :focus-visible, .site-actions button:focus-visible { outline:2px solid var(--accent-light); outline-offset:3px; }
 .button-row { display:flex; flex-wrap:wrap; gap:8px; }
 .widget-row { display:flex; align-items:center; gap:6px; padding:4px 8px; margin-bottom:6px; background:#ffffff06; border-radius:10px; cursor:grab; }
 #customize-panel .widget-row label { flex:1; justify-content:flex-start; margin:10px 0; }
 #settings-status { position:sticky; bottom:-24px; background:#101629; padding:12px 0; margin-bottom:0 !important; }
+
+/* Backgrounds. Nebula is the default body gradient above. */
+[data-background=twilight] body { background: radial-gradient(ellipse at 50% 120%, rgba(var(--nebula-2), .35), transparent 60%), linear-gradient(180deg, #060a20 0%, #121339 45%, #24163d 75%, #0b0b22 100%); }
+[data-background=black] body { background: #000; }
+[data-background=black] .nebula, [data-background=custom] .nebula { display: none; }
+[data-background=custom] body { background: #000 var(--bg-image, none) center / cover no-repeat; }
+[data-background=custom] .vignette { background: radial-gradient(ellipse at center, transparent 32%, rgba(2, 4, 14, 0.2) 80%), rgba(2, 4, 14, var(--bg-dim)); }
+.galaxy.no-spin { animation: none; }
+
+/* Greeting, extra clock line and to-do list. */
+.greeting { margin: 0; font-size: clamp(22px, 3vw, 30px); font-weight: 500; text-align: center; text-shadow: 0 2px 18px #030614; }
+#clock-zone { margin: 6px 0 0; color: #9eabd4; font-size: 13px; font-variant-numeric: tabular-nums; }
+.todo-widget h2 { font-size: 16px; margin: 0 0 12px; }
+#todo-form { display: flex; gap: 8px; }
+#todo-input { flex: 1; min-width: 0; padding: 10px 12px; border: 1px solid #ffffff30; border-radius: 8px; background: transparent; color: inherit; font: inherit; }
+#todo-form button, #todo-clear { border: 1px solid #ffffff30; border-radius: 8px; background: color-mix(in srgb, var(--accent) 35%, transparent); color: inherit; font: inherit; cursor: pointer; }
+#todo-form button { width: 42px; font-size: 20px; }
+#todo-list { list-style: none; margin: 12px 0 0; padding: 0; max-height: 300px; overflow-y: auto; }
+#todo-list li { display: flex; align-items: center; gap: 8px; padding: 6px 4px; border-bottom: 1px solid #ffffff10; }
+#todo-list label { flex: 1; display: flex; align-items: center; gap: 10px; min-width: 0; cursor: pointer; overflow-wrap: anywhere; }
+#todo-list input { width: 17px; height: 17px; flex: none; accent-color: var(--accent-light); }
+#todo-list .done span { color: #8d97b8; text-decoration: line-through; }
+#todo-list li button { border: 0; background: none; color: #9aa5c9; cursor: pointer; font: inherit; padding: 4px 6px; border-radius: 6px; }
+#todo-list li button:hover { color: #fff; background: #ffffff14; }
+#todo-clear { margin-top: 12px; padding: 7px 12px; font-size: 13px; }
+
+/* Shortcut tiles carry pin, hide and unpin buttons that appear on hover or focus. */
+.site-tile { position: relative; min-width: 0; }
+.site-actions { position: absolute; top: 2px; right: 2px; display: flex; gap: 2px; opacity: 0; transition: opacity .15s; }
+.site-tile:hover .site-actions, .site-tile:focus-within .site-actions { opacity: 1; }
+.site-actions button { width: 24px; height: 24px; padding: 0; border: 1px solid #c5cfff40; border-radius: 50%; background: #11172ef0; color: #e6ebff; font-size: 11px; line-height: 1; cursor: pointer; }
+.site-actions button:hover { background: color-mix(in srgb, var(--accent) 60%, #11172e); }
+
+/* Panel lists and inline forms. */
+.inline-form { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+.inline-form input { flex: 1 1 140px; min-width: 0; margin: 0 !important; }
+#customize-panel input[type=text] { box-sizing: border-box; padding: 9px 10px; }
+#customize-panel label > input[type=text] { width: 100%; }
+.pin-row { display: flex; align-items: center; gap: 6px; padding: 4px 8px; margin-bottom: 6px; background: #ffffff06; border-radius: 10px; }
+.pin-row span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; }
+#customize-panel .pin-row button { padding: 5px 9px; }
+#restore-hidden { margin-top: 4px; }
+#background-image-controls { margin: 0 0 8px; }

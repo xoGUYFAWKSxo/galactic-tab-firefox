@@ -5,7 +5,7 @@ async function applyStrip(settings){
  const suffix=value=>value==='still'?'-still':value==='slow'?'-slow':'';
  const images={theme_frame:`assets/strip/stars-${settings.preset}${suffix(settings.speed)}.png`};
  const properties={color_scheme:'dark',content_color_scheme:'dark'};
- if(settings.galaxy){images.additional_backgrounds=[`assets/strip/galaxy-${settings.size}${suffix(settings.spin)}.png`];properties.additional_backgrounds_alignment=[settings.position];properties.additional_backgrounds_tiling=['no-repeat'];}
+ if(settings.galaxy){images.additional_backgrounds=[`assets/strip/${settings.art}-${settings.size}${settings.art==='planet'?'-still':suffix(settings.spin)}.png`];properties.additional_backgrounds_alignment=[settings.position];properties.additional_backgrounds_tiling=['no-repeat'];}
  await browser.theme.update({images,properties,colors:{frame:settings.frame,toolbar:settings.toolbar,toolbar_text:settings.text,tab_background_text:settings.text,tab_text:settings.text,tab_selected:settings.toolbar,tab_line:settings.accent,toolbar_field:settings.toolbar,toolbar_field_text:settings.text}});
 }
 browser.runtime.onMessage.addListener(message=>{

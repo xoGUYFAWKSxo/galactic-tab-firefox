@@ -8,12 +8,14 @@
     <link rel="stylesheet" href="newtab.css">
     <script src="settings.js" defer></script>
     <script src="newtab.js" defer></script>
+    <script src="widgets.js" defer></script>
+    <script src="sync.js" defer></script>
     <script src="customize.js" defer></script>
-<script src="strip-shared.js" defer></script>
-<script src="strip-panel.js" defer></script>
+    <script src="strip-shared.js" defer></script>
+    <script src="strip-panel.js" defer></script>
   </head>
   <body>
-    <main class="universe" aria-label="Spiral galaxy and stars">
+    <main class="universe" aria-label="Space scene">
       <div class="nebula" aria-hidden="true"></div>
       <canvas id="star-flight" aria-hidden="true"></canvas>
       <img class="galaxy" src="assets/galaxy.png" alt="" draggable="false">
@@ -21,6 +23,7 @@
 
       <section class="home-content" aria-label="Galactic Tab home">
       <header class="home-heading" data-widget="heading"><img src="assets/icon.png" alt="" width="48" height="48"><h1>Galactic Tab</h1></header>
+      <p class="greeting" id="greeting" data-widget="greeting"></p>
       <div class="search-widget" data-widget="search"><form class="search" role="search">
         <label class="visually-hidden" for="search-query">Search the web</label>
         <input id="search-query" name="q" type="search" placeholder="Search the web" autocomplete="off" spellcheck="false">
@@ -30,42 +33,93 @@
       </form></div>
       <p class="message" aria-live="polite"></p>
       <section data-widget="shortcuts" class="shortcuts" aria-labelledby="shortcut-title"><h2 id="shortcut-title">Shortcuts</h2><div id="top-sites" class="site-grid"></div><p id="sites-message" role="status"></p></section>
-      <section class="clock-widget card" data-widget="clock"><time id="clock-time"></time><p id="clock-date"></p></section>
+      <section class="clock-widget card" data-widget="clock"><time id="clock-time"></time><p id="clock-date"></p><p id="clock-zone" hidden></p></section>
+      <section class="todo-widget card" data-widget="todo" aria-labelledby="todo-title"><h2 id="todo-title">To-do</h2>
+        <form id="todo-form"><input id="todo-input" type="text" maxlength="200" placeholder="Add a task…" aria-label="New task" autocomplete="off"><button type="submit" aria-label="Add task">+</button></form>
+        <ul id="todo-list"></ul><button id="todo-clear" type="button" hidden></button></section>
       <section class="notes-widget card" data-widget="notes"><h2>Notes</h2><textarea id="personal-notes" aria-label="Personal notes" placeholder="A thought to come back to…" maxlength="20000"></textarea></section>
       </section>
     </main>
     <button id="open-customize" class="customize-launcher" type="button">⚙ Customize</button>
     <dialog id="customize-panel" aria-labelledby="customize-title">
       <header class="panel-heading"><div><h2 id="customize-title">Make space yours</h2><p>Personalize Galactic Tab</p></div><button id="close-customize" aria-label="Close Customize">✕</button></header>
-      <section><h3>Space scene</h3>
-        <label>Galaxy position<select data-setting="corner"><option value="top-right">Upper right</option><option value="top-left">Upper left</option><option value="bottom-right">Lower right</option><option value="bottom-left">Lower left</option></select></label>
-        <label>Galaxy size <output data-value="size"></output><input data-setting="size" type="range" min="100" max="500" step="10"></label>
-        <label>Galaxy rotation <output data-value="spin"></output><input data-setting="spin" type="range" min="0" max="2" step="0.1"></label>
+      <details open><summary>Look &amp; feel</summary>
+        <label>Color theme<select data-setting="theme"></select></label>
+        <label>Artwork<select data-setting="art"></select></label>
+        <label>Background<select data-setting="background"></select></label>
+        <div id="background-image-controls" hidden>
+          <p id="background-note"></p>
+          <div class="button-row"><button id="choose-background" type="button">Choose image…</button><button id="remove-background" type="button">Remove image</button></div>
+          <input id="background-file" type="file" accept="image/*" hidden>
+          <label>Image dimming <output data-value="dim"></output><input data-setting="dim" type="range" min="0" max="0.8" step="0.05"></label>
+        </div>
+        <label class="toggle">Shooting stars<input data-setting="shooting" type="checkbox"></label>
+        <label>Animation<select data-setting="motion"><option value="auto">Follow system setting</option><option value="on">Always animate</option><option value="off">Paused</option></select></label>
+      </details>
+      <details><summary>Space scene</summary>
+        <label>Artwork position<select data-setting="corner"><option value="top-right">Upper right</option><option value="top-left">Upper left</option><option value="bottom-right">Lower right</option><option value="bottom-left">Lower left</option></select></label>
+        <label>Artwork size <output data-value="size"></output><input data-setting="size" type="range" min="100" max="500" step="10"></label>
+        <label>Rotation <output data-value="spin"></output><input data-setting="spin" type="range" min="0" max="2" step="0.1"></label>
+        <p id="spin-note" hidden>The ringed planet stays still.</p>
         <label>Star speed <output data-value="speed"></output><input data-setting="speed" type="range" min="0" max="3" step="0.1"></label>
         <label>Star density <output data-value="density"></output><input data-setting="density" type="range" min="0.25" max="2" step="0.25"></label>
         <label class="toggle">Twinkling stars<input data-setting="twinkle" type="checkbox"></label>
-        <label class="toggle">Show galaxy<input data-setting="galaxy" type="checkbox"></label>
+        <label class="toggle">Show artwork<input data-setting="galaxy" type="checkbox"></label>
         <label>Card opacity <output data-value="opacity"></output><input data-setting="opacity" type="range" min="0.2" max="1" step="0.05"></label>
-      </section>
-      <section><h3>Widgets &amp; order</h3><p>Drag rows to reorder, or use their arrow buttons.</p><div id="widget-settings"></div><label class="toggle">24-hour clock<input data-setting="clock24" type="checkbox"></label></section>
-      <section><h3>Presets</h3><div class="button-row"><button data-preset="minimal">Minimal</button><button data-preset="productive">Productivity</button><button data-preset="space">Deep Space</button></div></section>
-      <section id="strip-controls"><h3>Browser Strip</h3>
+      </details>
+      <details><summary>Widgets &amp; order</summary><p>Drag rows to reorder, or use their arrow buttons.</p><div id="widget-settings"></div>
+        <label>Your name, for the greeting<input data-setting="name" type="text" maxlength="40" placeholder="Optional" autocomplete="off"></label>
+      </details>
+      <details><summary>Clock</summary>
+        <label class="toggle">24-hour clock<input data-setting="clock24" type="checkbox"></label>
+        <label class="toggle">Show seconds<input data-setting="clockSeconds" type="checkbox"></label>
+        <label>Date<select data-setting="dateFormat"><option value="long">Sunday, October 19</option><option value="short">Sun, Oct 19</option><option value="numeric">Numbers (10/19/2026)</option><option value="none">Hide the date</option></select></label>
+        <label>Second time zone<select data-setting="zone2"><option value="">None</option></select></label>
+      </details>
+      <details><summary>Shortcuts</summary>
+        <label class="toggle">Include Firefox's frequent sites<input data-setting="topSites" type="checkbox"></label>
+        <label>Number of shortcuts<select data-setting="siteCount" data-number><option value="4">4</option><option value="8">8</option><option value="12">12</option><option value="16">16</option></select></label>
+        <p>Pinned sites come first. On the page, point at a shortcut to pin, hide or unpin it.</p>
+        <div id="pin-list"></div>
+        <form id="pin-form" class="inline-form"><input id="pin-title" type="text" maxlength="60" placeholder="Name (optional)" aria-label="Shortcut name" autocomplete="off"><input id="pin-url" type="text" maxlength="500" placeholder="example.com" aria-label="Shortcut address" autocomplete="off" required><button type="submit">Pin site</button></form>
+        <button id="restore-hidden" type="button"></button>
+      </details>
+      <details><summary>Search</summary>
+        <label>Search engine<select data-setting="engine"><option value="">Firefox default</option></select></label>
+        <p>Add more engines in Firefox Settings › Search.</p>
+      </details>
+      <details><summary>Presets &amp; saved setups</summary>
+        <p>Quick starts. Notes, to-dos, shortcuts and your name are kept.</p>
+        <div class="button-row"><button data-preset="minimal">Minimal</button><button data-preset="productive">Productivity</button><button data-preset="space">Deep Space</button></div>
+        <p>Save the current look, widgets and clock to switch back to later.</p>
+        <form id="setup-form" class="inline-form"><input id="setup-name" type="text" maxlength="40" placeholder="Setup name" aria-label="Setup name" autocomplete="off" required><button type="submit">Save setup</button></form>
+        <div id="setup-list"></div><p id="setup-empty">No saved setups yet.</p>
+      </details>
+      <details id="strip-controls"><summary>Browser Strip</summary>
 <p>Colors update live when enabled. Choose the animation, then Apply. These settings are separate from the new-tab scene.</p>
 <label class="toggle">Customize browser strip<input id="strip-enabled" type="checkbox"></label>
 <label>Star appearance<select id="strip-preset"><option value="gentle">Gentle · twinkling</option><option value="rich">Dense · twinkling</option><option value="steady">Gentle · no twinkle</option></select></label>
 <label>Star motion<select id="strip-speed"><option value="slow">Slow cruise (90 seconds)</option><option value="normal">Cruise (45 seconds)</option><option value="still">Still</option></select></label>
-<label class="toggle">Show galaxy<input id="strip-galaxy" type="checkbox"></label>
-<label>Galaxy size<select id="strip-size"><option value="48">Small</option><option value="72">Medium</option><option value="96">Large</option></select></label>
-<label>Galaxy position<select id="strip-position"><option value="right top">Right · near window controls</option><option value="center top">Center</option><option value="left top">Left</option></select></label>
-<label>Galaxy spin<select id="strip-spin"><option value="normal">Normal (45 seconds)</option><option value="slow">Slow (90 seconds)</option><option value="still">Still</option></select></label>
+<label class="toggle">Show artwork<input id="strip-galaxy" type="checkbox"></label>
+<label>Artwork<select id="strip-art"><option value="galaxy">Spiral galaxy</option><option value="nebula">Nebula</option><option value="blackhole">Black hole</option><option value="planet">Ringed planet (still)</option></select></label>
+<label>Artwork size<select id="strip-size"><option value="48">Small</option><option value="72">Medium</option><option value="96">Large</option></select></label>
+<label>Artwork position<select id="strip-position"><option value="right top">Right · near window controls</option><option value="center top">Center</option><option value="left top">Left</option></select></label>
+<label>Spin<select id="strip-spin"><option value="normal">Normal (45 seconds)</option><option value="slow">Slow (90 seconds)</option><option value="still">Still</option></select></label>
 <label class="toggle">Strip background<input id="strip-frame" type="color"></label>
 <label class="toggle">Toolbar &amp; selected tab<input id="strip-toolbar" type="color"></label>
 <label class="toggle">Text<input id="strip-text" type="color"></label>
 <label class="toggle">Accent<input id="strip-accent" type="color"></label>
 <div class="button-row"><button id="strip-match">Match new tab</button><button id="strip-apply">Apply visuals</button><button id="strip-export">Export strip</button><button id="strip-import">Import strip</button></div>
 <input id="strip-file" type="file" accept=".json,application/json" hidden>
-<p id="strip-status" role="status">Loading browser settings…</p></section>
-<section><h3>Your settings</h3><p>Saved on this device automatically. Backup files include your notes.</p><div class="button-row"><button id="export-settings">Export backup</button><button id="import-settings">Import backup</button><button id="reset-settings">Reset layout</button></div><input id="import-file" type="file" accept="application/json,.json" hidden></section>
+<p id="strip-status" role="status">Loading browser settings…</p></details>
+      <details><summary>Sync &amp; backup</summary>
+        <label class="toggle">Sync through your Firefox account<input id="sync-enabled" type="checkbox"></label>
+        <p id="sync-status" role="status"></p>
+        <div id="sync-choice" class="button-row" hidden><button id="sync-use-remote" type="button">Use the other computer's</button><button id="sync-use-local" type="button">Use this computer's</button></div>
+        <p>Firefox syncs this only while you are signed in and Add-ons is ticked in Firefox Settings › Sync.</p>
+        <p>Backups include notes, to-dos, saved setups and your background image.</p>
+        <div class="button-row"><button id="export-settings">Export backup</button><button id="import-settings">Import backup</button><button id="reset-settings">Reset layout</button></div><input id="import-file" type="file" accept="application/json,.json" hidden>
+      </details>
       <p id="settings-status" role="status" aria-live="polite"></p>
     </dialog>
   </body>
